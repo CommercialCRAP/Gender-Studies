@@ -1,17 +1,42 @@
 #include <MsgBoxConstants.au3>
 #include <ScreenCapture.au3>
+#include <ClipBoard.au3>
+#include <String.au3>
 
 
-#A - Ouvrir une recherche de profils dans Thaifriendly dans fenÍtre maximisÈe de chrome en plein Ècran rÈsolution 1366x768,
-#B - Èditer le script pour donner:
+#A - Ouvrir une recherche de profils dans Thaifriendly dans fen√™tre maximis√©e de chrome en plein √©cran r√©solution 1366x768,
+#B - √©diter le script pour donner:
 
 Global $n = 25
-#Nombre de pages de profils dans les rÈsultats de la recherche = n
+#Nombre de pages de profils dans les r√©sultats de la recherche = n
+
+Global $like = 0
+
+Global $advertisementOffset = 0
+
+Global $searchCriteriaOffset = 1
+
+Global $advertisementOffsetInProfile = $advertisementOffset
+
+Global $opener = 1
+
+Global $profileName = ("")
+
+Global $openerText = ("Hello " & $profileName & "{!} My name is Julo. Nice to meet you here :)")
+
+Global $webpageLoaded = 0
+
+Global $startTimer = TimerInit()
+Global $timerBetweenMessages = 12*60*1000
+
+Global $x_address = 279 ; abscisse Dateinasia dans barre d'adresse de chrome
+Global $y_address = 48 ; ordonn√©e Dateinasia dans barre d'adresse de chrome
+
 
 #C - Lancer le script. ; Press PRINTSCREEN to terminate script, Pause/Break to "pause"
 
-#Plantait des fois en plein milieu en ouvrant un profil (cause corrigÈe)
-#Ne marche pas pour la deniËre page de rÈsultats quoi qu il arrive mais c est normal.
+#Plantait des fois en plein milieu en ouvrant un profil (cause corrig√©e)
+#Ne marche pas pour la deni√®re page de r√©sultats quoi qu il arrive mais c est normal.
 
 
 ; Press PRINTSCREEN to terminate script, Pause/Break to "pause"
@@ -45,6 +70,55 @@ For $i = 1 to ($n-1)
    For $j = 0 to 9
 	  For $k = 0 to 7
 		 MouseClick("left", (253+$k*115), 437)
+		 $webpageLoaded = 0
+		 $advertisementOffsetInProfile = $advertisementOffset
+		 send("{SHIFTDOWN}")
+		 send("{CTRLDOWN}")
+		 MouseClick("left", (253+$k*115), 380)
+		 send("{SHIFTUP}")
+		 send("{CTRLUP}")
+		 While ($webpageLoaded == 0)
+			Sleep ( 5000 )
+			$yellowMessageBoxColorTest1 = PixelGetColor (190 , 340)
+			#MsgBox($MB_SYSTEMMODAL, "", "The hex color is: " & Hex($yellowMessageBoxColorTest1, 6))
+			#MsgBox($MB_SYSTEMMODAL, "", "The decimal color is: " & $yellowMessageBoxColorTest1)
+
+			$yellowMessageBoxColorTest2 = PixelGetColor (1180 , 335)
+
+			If ($yellowMessageBoxColorTest1 == 16382457) Then
+			   $webpageLoaded = 1
+			#ElseIf ($yellowMessageBoxColorTest2 == 16641459) Then
+			#   $advertisementOffsetInProfile = 0
+			#   $webpageLoaded = 1
+			EndIf
+		 WEnd
+		 if ($opener == 1) Then
+			$redQuoteColorTest = PixelGetColor (1000 , 462+$advertisementOffsetInProfile)
+			#MsgBox($MB_SYSTEMMODAL, "", "The decimal color is: " & $redQuoteColorTest)
+			#MsgBox($MB_SYSTEMMODAL, "", "The hex color is: " & Hex($redQuoteColorTest, 6))
+
+			If ($redQuoteColorTest == 16768678) Then
+			   #Aucun contact pr√©c√©dent, donc on envoit l'opener. Sinon on n'envoit pas l'opener.
+			   MouseClick("left", $x_address, $y_address)
+
+			   send("{CTRLDOWN}")
+			   send("a")
+			   send("c")
+			   send("{CTRLUP}")
+			   $msg = _ClipBoard_GetData()
+			   $profileName= _StringProper(StringReplace(StringTrimLeft($msg, 25),"+"," "))
+			   $openerText = ("Hello " & $profileName & "{!} My name is Julo. Nice to meet you here :)")
+			   #MsgBox($MB_SYSTEMMODAL,"",$openerText)
+			   MouseClick("left", 624, 312+$advertisementOffsetInProfile)
+			   send($openerText)
+			   sleep ( 2500 )
+			   MouseClick("left", 1035, 407+$advertisementOffsetInProfile)
+			   sleep ( 3000 )
+			   sleep ( 11*60*1000 )
+			   $startTimer = TimerInit()
+			EndIf
+		 EndIf
+		 send("^w")
 	  Next
 	  MouseClickDrag ( "left", 1360, (175+$j*51), 1360, (175+($j+1)*51))
 	  Sleep (3000)
