@@ -4,11 +4,11 @@
 #include <String.au3>
 
 
-#A - Ouvrir une recherche de profils dans Thaifriendly dans fenÃªtre maximisÃ©e de chrome en plein Ã©cran rÃ©solution 1366x768,
-#B - Ã©diter le script pour donner:
+#A - Ouvrir une recherche de profils dans Thaifriendly dans fenêtre maximisée de chrome en plein écran résolution 1366x768,
+#B - éditer le script pour donner:
 
 Global $n = 25
-#Nombre de pages de profils dans les rÃ©sultats de la recherche = n
+#Nombre de pages de profils dans les résultats de la recherche = n
 
 Global $like = 0
 
@@ -28,15 +28,13 @@ Global $webpageLoaded = 0
 
 Global $startTimer = TimerInit()
 Global $timerBetweenMessages = 12*60*1000
-
-Global $x_address = 279 ; abscisse Dateinasia dans barre d'adresse de chrome
-Global $y_address = 48 ; ordonnÃ©e Dateinasia dans barre d'adresse de chrome
+Global $timerDifference = TimerDiff ( $startTimer )
 
 
 #C - Lancer le script. ; Press PRINTSCREEN to terminate script, Pause/Break to "pause"
 
-#Plantait des fois en plein milieu en ouvrant un profil (cause corrigÃ©e)
-#Ne marche pas pour la deniÃ¨re page de rÃ©sultats quoi qu il arrive mais c est normal.
+#Plantait des fois en plein milieu en ouvrant un profil (cause corrigée)
+#Ne marche pas pour la denière page de résultats quoi qu il arrive mais c est normal.
 
 
 ; Press PRINTSCREEN to terminate script, Pause/Break to "pause"
@@ -77,6 +75,7 @@ For $i = 1 to ($n-1)
 		 MouseClick("left", (253+$k*115), 380)
 		 send("{SHIFTUP}")
 		 send("{CTRLUP}")
+		 $startTimer = TimerInit()
 		 While ($webpageLoaded == 0)
 			Sleep ( 5000 )
 			$yellowMessageBoxColorTest1 = PixelGetColor (190 , 340)
@@ -85,11 +84,16 @@ For $i = 1 to ($n-1)
 
 			$yellowMessageBoxColorTest2 = PixelGetColor (1180 , 335)
 
+			$timerDifference = TimerDiff ( $startTimer )
+
 			If ($yellowMessageBoxColorTest1 == 16382457) Then
 			   $webpageLoaded = 1
 			#ElseIf ($yellowMessageBoxColorTest2 == 16641459) Then
 			#   $advertisementOffsetInProfile = 0
 			#   $webpageLoaded = 1
+			ElseIf ($timerDifference > 2*60*1000) Then
+			send("{ESCAPE}")
+			send("{F5}")
 			EndIf
 		 WEnd
 		 if ($opener == 1) Then
@@ -98,10 +102,10 @@ For $i = 1 to ($n-1)
 			#MsgBox($MB_SYSTEMMODAL, "", "The hex color is: " & Hex($redQuoteColorTest, 6))
 
 			If ($redQuoteColorTest == 16768678) Then
-			   #Aucun contact prÃ©cÃ©dent, donc on envoit l'opener. Sinon on n'envoit pas l'opener.
-			   MouseClick("left", $x_address, $y_address)
+			   #Aucun contact précédent, donc on envoit l'opener. Sinon on n'envoit pas l'opener.
 
 			   send("{CTRLDOWN}")
+			   send("d")
 			   send("a")
 			   send("c")
 			   send("{CTRLUP}")
