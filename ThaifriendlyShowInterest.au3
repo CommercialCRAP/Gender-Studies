@@ -7,7 +7,7 @@
 #A - Ouvrir une recherche de profils dans Thaifriendly dans fenêtre maximisée de chrome en plein écran résolution 1366x768,
 #B - éditer le script pour donner:
 
-Global $n = 25
+Global $n = 7
 #Nombre de pages de profils dans les résultats de la recherche = n
 
 Global $like = 0
@@ -104,13 +104,21 @@ For $i = 1 to ($n-1)
 			If ($redQuoteColorTest == 16768678) Then
 			   #Aucun contact précédent, donc on envoit l'opener. Sinon on n'envoit pas l'opener.
 
+			   send("!d")
 			   send("{CTRLDOWN}")
-			   send("d")
 			   send("a")
 			   send("c")
 			   send("{CTRLUP}")
 			   $msg = _ClipBoard_GetData()
-			   $profileName= _StringProper(StringReplace(StringTrimLeft($msg, 25),"+"," "))
+			   $siteAddressLength = 25
+			   if StringRegExp($msg, 'pinalove') Then
+				  $siteAddressLength = 25
+			   ElseIf StringRegExp($msg, 'thaifriendly') Then
+				  $siteAddressLength = 29
+			   ElseIf StringRegExp($msg, 'vietnameselove') Then
+				  $siteAddressLength = 31
+			   EndIf
+			   $profileName= _StringProper(StringReplace(StringTrimLeft($msg, $siteAddressLength),"+"," "))
 			   $openerText = ("Hello " & $profileName & "{!} My name is Julo. Nice to meet you here :)")
 			   #MsgBox($MB_SYSTEMMODAL,"",$openerText)
 			   MouseClick("left", 624, 312+$advertisementOffsetInProfile)
@@ -142,7 +150,12 @@ For $i = 1 to ($n-1)
 
     #ShellExecute(@MyDocumentsDir & "\GDIPlus_Image2.jpg")
 #EndFunc   ;==>Example
-   if (($i < 6) Or ($i > ($n-3))) Then
+   If ($n<7) Then
+	   MouseMove(797, 535)
+	  ; Capture full screen
+    _ScreenCapture_Capture(@MyDocumentsDir & "\BeforeClickNextResultPage" & $i & ".jpg")
+	  MouseClick("left", 797, 535)
+   Elseif (($i < 6) Or ($i > ($n-3))) Then
 	  MouseMove(849, 535)
 	  ; Capture full screen
     _ScreenCapture_Capture(@MyDocumentsDir & "\BeforeClickNextResultPage" & $i & ".jpg")
