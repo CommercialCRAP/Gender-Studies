@@ -110,7 +110,15 @@ For $i = 1 to ($n-1)
 			   send("c")
 			   send("{CTRLUP}")
 			   $msg = _ClipBoard_GetData()
-			   $profileName= _StringProper(StringReplace(StringTrimLeft($msg, 25),"+"," "))
+			   $siteAddressLength = 25
+			   if StringRegExp($msg, 'pinalove') Then
+				  $siteAddressLength = 25
+			   ElseIf StringRegExp($msg, 'thaifriendly') Then
+				  $siteAddressLength = 29
+			   ElseIf StringRegExp($msg, 'vietnameselove') Then
+				  $siteAddressLength = 31
+			   EndIf
+			   $profileName= _StringProper(StringReplace(StringTrimLeft($msg, $siteAddressLength),"+"," "))
 			   $openerText = ("Hello " & $profileName & "{!} My name is Julo. Nice to meet you here :)")
 			   #MsgBox($MB_SYSTEMMODAL,"",$openerText)
 			   MouseClick("left", 624, 312+$advertisementOffsetInProfile)
